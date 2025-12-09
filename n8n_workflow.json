@@ -1,0 +1,70 @@
+{
+  "name": "LINE Simple Webhook Responder",
+  "nodes": [
+    {
+      "parameters": {
+        "authentication": "none",
+        "httpMethod": "POST",
+        "path": "line-reply"
+      },
+      "name": "LINE Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "executeOnce": false,
+      "charging": {
+        "mode": "default"
+      },
+      "id": "e304f32c-2965-4f40-a309-8d1e2e132714"
+    },
+    {
+      "parameters": {
+        "functionCode": "const data = $json.body.events[0];\n\n// Check if it's a message event\nif (data && data.type === 'message' && data.message.type === 'text') {\n  return [{\n    json: {\n      replyToken: data.replyToken,\n      user_text: data.message.text,\n      sourceType: data.source.type,\n    }\n  }];\n} else {\n  // Handle non-text messages or other event types\n  return [{\n    json: {\n      replyToken: data.replyToken,\n      user_text: \"[Non-Text Message Received]\",\n      sourceType: data.source.type,\n    }\n  }];\n}"
+      },
+      "name": "Parse LINE Message",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "id": "964726e6-121f-490b-93f4-38600d86a51d"
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "operation": "reply",
+        "replyToken": "={{ $json.replyToken }}",
+        "options": {},
+        "text": "=You said: {{ $json.user_text }}"
+      },
+      "name": "Reply to LINE User",
+      "type": "n8n-nodes-base.line",
+      "typeVersion": 1,
+      "id": "f516a858-a53c-42e7-a92c-674a2f8d3c5f",
+      "credentials": {
+        "lineApi": {
+          "id": "line_credential_id",
+          "name": "Line API Account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "LINE Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "Parse LINE Message",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse LINE Message": {
+      "main": [
+        [
+          {
+            "node": "Reply to LINE User",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}
