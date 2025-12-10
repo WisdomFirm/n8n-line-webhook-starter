@@ -60,8 +60,7 @@ n8n-line-webhook-starter/
 3.  Go to the **LINE Developers Console** -> Messaging API tab.
 4.  Paste the URL into the **Webhook URL** field and enable **"Use webhook"**.
 5.  **Toggle the Workflow to "Active"** (Top right switch in n8n).
-### 📄 License
+## 📄 License
 This project is licensed under the MIT License - see the LICENSE file for details.
 
-## License
-This project is licensed under the MIT License.
+
